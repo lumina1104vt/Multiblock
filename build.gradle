@@ -1,0 +1,53 @@
+// lumina_multiblock - multiblock structure library, a separate lib mod. No runs of its own: the
+// root project's runs load it beside Gravity Tech. Shared setup: gradle/mod-common.gradle.
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'idea'
+    id 'net.neoforged.moddev'   // version from the root project
+}
+
+apply from: rootProject.file('gradle/mod-common.gradle')
+
+neoForge {
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+repositories {
+    mavenCentral()  // JUnit
+}
+
+dependencies {
+    // optional: the builder takes blocks from AE networks (com.lumina.lmb.compat, only loaded with AE2)
+    compileOnly "maven.modrinth:ae2:${ae2_version}"
+
+    // optional: the structures in JEI (com.lumina.lmb.compat.StructuresJei, only loaded with JEI)
+    compileOnly "maven.modrinth:jei:${jei_version}"
+    compileOnly "maven.modrinth:emi:${emi_version}"
+
+    // engine tests (com.lumina.lmb.core is plain Java over a generic block-state type)
+    testImplementation platform('org.junit:junit-bom:5.10.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
