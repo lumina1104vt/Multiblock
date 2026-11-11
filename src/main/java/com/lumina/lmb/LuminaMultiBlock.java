@@ -5,7 +5,6 @@ import com.lumina.lmb.builder.BuilderContent;
 import com.lumina.lmb.compat.AeMaterials;
 import com.lumina.lmb.network.BuilderModesPacket;
 import com.lumina.lmb.network.FormedPacket;
-import com.lumina.lmb.tools.DemoTank;
 import com.lumina.lmb.tools.LmbCommands;
 import com.lumina.lmb.world.FormedSync;
 import com.lumina.lmb.world.MultiblockEvents;
@@ -14,7 +13,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.slf4j.Logger;
@@ -39,7 +37,6 @@ public class LuminaMultiBlock {
         NeoForge.EVENT_BUS.addListener(FormedSync::onChangedDimension);
         NeoForge.EVENT_BUS.addListener(FormedSync::onRespawn);
         NeoForge.EVENT_BUS.addListener(LmbCommands::register);
-        if (!FMLEnvironment.production) DemoTank.register();
     }
 
     private static void registerPayloads(RegisterPayloadHandlersEvent event) {

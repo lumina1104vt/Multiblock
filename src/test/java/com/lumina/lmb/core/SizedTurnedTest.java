@@ -7,7 +7,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/** demo_tank's setup (sizes 3..9, four turns): a 5-cube in each turn forms. */
+/** A tank's setup (sizes 3..9, four turns): a 5-cube in each turn forms. */
 class SizedTurnedTest {
     @Test
     void fiveCubeFormsInEveryTurn() {

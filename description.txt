@@ -1,0 +1,5 @@
+A multiblock structure library. It defines multiblock shapes and detects when they are formed.
+
+----
+
+多方塊結構函式庫，定義多方塊的形狀並偵測是否成形。

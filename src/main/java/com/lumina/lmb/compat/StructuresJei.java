@@ -111,7 +111,7 @@ public class StructuresJei implements IModPlugin {
 
         @Override
         public void setRecipe(IRecipeLayoutBuilder builder, Structure s, IFocusGroup focuses) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 1, 1).setOutputSlotBackground().addItemStacks(s.controllers());
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 1, 1).setStandardSlotBackground().addItemStacks(s.controllers());
             // also a use of the controller, so U on it finds the structure as R does
             builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemStacks(s.controllers());
             builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemStacks(StructureInfo.parts(s.def()));
