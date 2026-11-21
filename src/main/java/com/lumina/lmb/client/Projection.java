@@ -27,9 +27,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -47,6 +47,8 @@ public final class Projection {
     private static final int MAX_GHOSTS = 1024;
     private static final int RESCAN_TICKS = 10, RESELECT_TICKS = 100;
     private static final float ALPHA = 0.45f;
+    private static final float[] BRIGHT = {1f, 1f, 1f, 1f};
+    private static final int[] LIGHTS = {LightTexture.FULL_BRIGHT, LightTexture.FULL_BRIGHT, LightTexture.FULL_BRIGHT, LightTexture.FULL_BRIGHT};
     /** Orange: where a block is wrong (not told apart from anything by colour alone: it is a box). */
     private static final float BOX_R = 1, BOX_G = 0.6f, BOX_B = 0.1f;
 
@@ -62,7 +64,9 @@ public final class Projection {
     private Projection() {
     }
 
-    public static void onTick(ClientTickEvent.Post event) {
+    public static void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END)
+            return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null
                 || !mc.player.getMainHandItem().is(BuilderContent.BUILDER.get()) && !mc.player.getOffhandItem().is(BuilderContent.BUILDER.get())) {
@@ -190,6 +194,6 @@ public final class Projection {
     private static void quads(VertexConsumer vc, PoseStack pose, BakedModel model, BlockState state, @Nullable Direction side, RandomSource random) {
         random.setSeed(42);
         for (BakedQuad quad : model.getQuads(state, side, random, ModelData.EMPTY, null))
-            vc.putBulkData(pose.last(), quad, 1, 1, 1, ALPHA, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+            vc.putBulkData(pose.last(), quad, BRIGHT, 1f, 1f, 1f, ALPHA, LIGHTS, OverlayTexture.NO_OVERLAY, false);
     }
 }

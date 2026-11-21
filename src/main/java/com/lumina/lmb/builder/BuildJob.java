@@ -26,11 +26,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.util.BlockSnapshot;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -90,7 +90,7 @@ public final class BuildJob {
             return;
         }
         stop(player, false);
-        int modes = builder.getOrDefault(BuilderContent.MODES.get(), 0);
+        int modes = BuilderContent.modes(builder);
         boolean deconstruct = BuilderModes.has(modes, BuilderModes.DECONSTRUCT);
         boolean noHatches = BuilderModes.has(modes, BuilderModes.NO_HATCHES);
         Definition<BlockState> def = structure.definition();
@@ -143,7 +143,7 @@ public final class BuildJob {
         Comparator<Step> byDistance = Comparator.comparingDouble(s -> s.pos.distSqr(anchor));
         steps.sort(deconstruct ? byDistance.reversed() : byDistance);
 
-        BuildJob job = new BuildJob(player, builder.get(BuilderContent.LINK.get()), steps);
+        BuildJob job = new BuildJob(player, BuilderContent.link(builder), steps);
         job.inTheWay.addAll(inTheWay);
         if (noSuggestion[0] > 0 && steps.isEmpty() && inTheWay.isEmpty()) {
             player.displayClientMessage(Component.translatable("lumina_multiblock.builder.no_suggestion", noSuggestion[0]), false);
@@ -214,8 +214,8 @@ public final class BuildJob {
         }
     }
 
-    public static void onServerTick(ServerTickEvent.Post event) {
-        if (JOBS.isEmpty()) return;
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || JOBS.isEmpty()) return;
         MinecraftServer server = event.getServer();
         for (Iterator<BuildJob> it = JOBS.values().iterator(); it.hasNext(); ) {
             BuildJob job = it.next();
@@ -276,8 +276,8 @@ public final class BuildJob {
         }
         BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, pos);
         level.setBlock(pos, target, Block.UPDATE_ALL);
-        if (EventHooks.onBlockPlace(p, snapshot, Direction.UP)) {
-            snapshot.restore(Block.UPDATE_ALL);
+        if (ForgeEventFactory.onBlockPlace(p, snapshot, Direction.UP)) {
+            snapshot.restore(true);
             refused++;
             if (materials != null) giveBack(p, materials, new ItemStack(item));
             return;
@@ -288,7 +288,7 @@ public final class BuildJob {
     private void takeDown(ServerPlayer p, ServerLevel level, BlockPos pos, MaterialSource materials) {
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return;
-        if (!level.mayInteract(p, pos) || CommonHooks.fireBlockBreak(level, p.gameMode.getGameModeForPlayer(), p, pos, state).isCanceled()) {
+        if (!level.mayInteract(p, pos) || ForgeHooks.onBlockBreakEvent(level, p.gameMode.getGameModeForPlayer(), p, pos) < 0) {
             refused++;
             return;
         }

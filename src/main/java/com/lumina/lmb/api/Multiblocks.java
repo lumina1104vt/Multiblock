@@ -27,7 +27,7 @@ import java.util.Map;
 public final class Multiblocks {
     /** Blocks of other mods that keep state for one machine only (see {@link MultiblockMember}). */
     public static final TagKey<Block> EXCLUSIVE = TagKey.create(Registries.BLOCK,
-            ResourceLocation.fromNamespaceAndPath(LuminaMultiBlock.MODID, "exclusive"));
+            new ResourceLocation(LuminaMultiBlock.MODID, "exclusive"));
 
     private static final Map<String, Definition<BlockState>> DEFINITIONS = new LinkedHashMap<>();
 

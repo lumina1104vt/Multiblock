@@ -28,7 +28,7 @@ public final class CountedItemRenderer implements IIngredientRenderer<ItemStack>
     @Override
     public List<Component> getTooltip(ItemStack stack, TooltipFlag flag) {
         Minecraft mc = Minecraft.getInstance();
-        List<Component> lines = new ArrayList<>(stack.getTooltipLines(Item.TooltipContext.of(mc.level), mc.player, flag));
+        List<Component> lines = new ArrayList<>(stack.getTooltipLines(mc.player, flag));
         if (stack.getCount() > 1)
             lines.add(RecipeNumbers.exact(stack.getCount()));
         return lines;

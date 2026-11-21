@@ -52,8 +52,7 @@ public final class MultiblockData extends SavedData {
     }
 
     static void attach(ServerLevel level) {
-        MultiblockData data = level.getDataStorage().computeIfAbsent(
-                new SavedData.Factory<>(() -> new MultiblockData(level), (tag, registries) -> load(level, tag)), LuminaMultiBlock.MODID);
+        MultiblockData data = level.getDataStorage().computeIfAbsent(tag -> load(level, tag), () -> new MultiblockData(level), LuminaMultiBlock.MODID);
         LOADED.put(level, data);
     }
 
@@ -84,7 +83,7 @@ public final class MultiblockData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+    public CompoundTag save(CompoundTag tag) {
         ListTag list = new ListTag();
         for (Record r : engine.save()) {
             CompoundTag t = new CompoundTag();

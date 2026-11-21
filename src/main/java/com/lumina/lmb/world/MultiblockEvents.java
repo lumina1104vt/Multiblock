@@ -2,9 +2,9 @@ package com.lumina.lmb.world;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.LevelEvent;
 
 /** Feeds the engines: one per server level, ticked with it. Block changes come from LevelChunkMixin. */
 public final class MultiblockEvents {
@@ -18,8 +18,8 @@ public final class MultiblockEvents {
         if (event.getLevel() instanceof ServerLevel level) MultiblockData.detach(level);
     }
 
-    public static void onLevelTick(LevelTickEvent.Post event) {
-        if (event.getLevel() instanceof ServerLevel level) {
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && event.level instanceof ServerLevel level) {
             MultiblockData data = MultiblockData.get(level);
             if (data != null) data.tick();
         }

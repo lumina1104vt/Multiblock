@@ -35,12 +35,12 @@ public final class AeMaterials {
 
             @Override
             public void link(ItemStack stack, GlobalPos pos) {
-                stack.set(BuilderContent.LINK.get(), pos);
+                BuilderContent.setLink(stack, pos);
             }
 
             @Override
             public void unlink(ItemStack stack) {
-                stack.remove(BuilderContent.LINK.get());
+                BuilderContent.setLink(stack, null);
             }
         });
     }

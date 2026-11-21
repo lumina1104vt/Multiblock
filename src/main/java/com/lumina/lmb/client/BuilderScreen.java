@@ -3,6 +3,7 @@ package com.lumina.lmb.client;
 import com.lumina.lmb.builder.BuilderContent;
 import com.lumina.lmb.builder.BuilderModes;
 import com.lumina.lmb.network.BuilderModesPacket;
+import com.lumina.lmb.network.LmbNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -11,7 +12,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 /** The builder's modes, each switched on or off on its own. */
 public class BuilderScreen extends Screen {
@@ -27,7 +27,7 @@ public class BuilderScreen extends Screen {
     public static void open(InteractionHand hand) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
-        int modes = player.getItemInHand(hand).getOrDefault(BuilderContent.MODES.get(), 0);
+        int modes = BuilderContent.modes(player.getItemInHand(hand));
         Minecraft.getInstance().setScreen(new BuilderScreen(hand, modes));
     }
 
@@ -38,7 +38,7 @@ public class BuilderScreen extends Screen {
             addRenderableWidget(Button.builder(label(mode), b -> {
                 modes ^= mode;
                 b.setMessage(label(mode));
-                PacketDistributor.sendToServer(new BuilderModesPacket(hand == InteractionHand.MAIN_HAND, modes));
+                LmbNetwork.CHANNEL.sendToServer(new BuilderModesPacket(hand == InteractionHand.MAIN_HAND, modes));
             }).bounds(width / 2 - 100, y, 200, 20).build());
             y += 24;
         }

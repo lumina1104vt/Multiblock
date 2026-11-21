@@ -16,6 +16,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -56,12 +58,12 @@ public class BuilderItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        int modes = stack.getOrDefault(BuilderContent.MODES.get(), 0);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        int modes = BuilderContent.modes(stack);
         for (int mode : BuilderModes.ALL) {
             if (BuilderModes.has(modes, mode)) tooltip.add(Component.translatable(BuilderModes.key(mode)).withStyle(ChatFormatting.AQUA));
         }
-        GlobalPos link = stack.get(BuilderContent.LINK.get());
+        GlobalPos link = BuilderContent.link(stack);
         tooltip.add(link == null
                 ? Component.translatable("lumina_multiblock.builder.unlinked").withStyle(ChatFormatting.GRAY)
                 : Component.translatable("lumina_multiblock.builder.linked", link.pos().toShortString()).withStyle(ChatFormatting.GRAY));

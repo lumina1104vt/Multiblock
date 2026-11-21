@@ -7,9 +7,7 @@ import com.lumina.lmb.core.RoleField;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -25,7 +23,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
@@ -60,9 +58,11 @@ public final class StructureMesh {
                 cells[i] = states.computeIfAbsent(role, r -> first(RoleBlocks.of(r)));
         }
         RandomSource random = RandomSource.create();
-        try (ByteBufferBuilder memory = new ByteBufferBuilder(1 << 20)) {
+        {
             for (int y = 0; y < sizeY; y++) {
-                BufferBuilder builder = new BufferBuilder(memory, VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
+                BufferBuilder builder = new BufferBuilder(1 << 20);
+                builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.NEW_ENTITY);
+                boolean any = false;
                 PoseStack pose = new PoseStack();
                 for (int x = 0; x < sizeX; x++)
                     for (int z = 0; z < sizeZ; z++) {
@@ -75,18 +75,20 @@ public final class StructureMesh {
                         for (Direction side : SIDES) {
                             BlockState next = at(field, cells, x + side.getStepX(), y + side.getStepY(), z + side.getStepZ());
                             if (next == null || !next.canOcclude())
-                                quads(builder, pose, model, state, side, random);
+                                any |= quads(builder, pose, model, state, side, random);
                         }
-                        quads(builder, pose, model, state, null, random);
+                        any |= quads(builder, pose, model, state, null, random);
                         pose.popPose();
                     }
-                MeshData mesh = builder.build();
-                if (mesh != null) {
+                BufferBuilder.RenderedBuffer mesh = builder.end();
+                if (any) {
                     VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
                     buffer.bind();
                     buffer.upload(mesh);
                     VertexBuffer.unbind();
                     layers[y] = buffer;
+                } else {
+                    mesh.release();
                 }
             }
         }
@@ -106,10 +108,14 @@ public final class StructureMesh {
         return cells[field.index(x, y, z)];
     }
 
-    private static void quads(BufferBuilder builder, PoseStack pose, BakedModel model, BlockState state, @Nullable Direction side, RandomSource random) {
+    private static boolean quads(BufferBuilder builder, PoseStack pose, BakedModel model, BlockState state, @Nullable Direction side, RandomSource random) {
         random.setSeed(42);
-        for (BakedQuad quad : model.getQuads(state, side, random, ModelData.EMPTY, null))
-            builder.putBulkData(pose.last(), quad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        boolean any = false;
+        for (BakedQuad quad : model.getQuads(state, side, random, ModelData.EMPTY, null)) {
+            builder.putBulkData(pose.last(), quad, 1f, 1f, 1f, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+            any = true;
+        }
+        return any;
     }
 
     public int sizeX() {

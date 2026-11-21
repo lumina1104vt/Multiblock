@@ -11,19 +11,18 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.model.BakedModelWrapper;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,13 +72,6 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
         return model(look).getRenderTypes(look, rand, lookData(data));
     }
 
-    @Override
-    public TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
-        BlockState look = data.get(LOOK);
-        if (look == null || look.isAir()) return super.useAmbientOcclusion(state, data, renderType);
-        return model(look).useAmbientOcclusion(look, lookData(data), renderType);
-    }
-
     private static ModelData lookData(ModelData data) {
         ModelData d = data.get(LOOK_DATA);
         return d == null ? ModelData.EMPTY : d;
@@ -105,8 +97,8 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
             }
         });
         if (looks.isEmpty()) return;
-        Map<ModelResourceLocation, BakedModel> models = event.getModels();
-        Set<ModelResourceLocation> wrapped = new HashSet<>();
+        Map<ResourceLocation, BakedModel> models = event.getModels();
+        Set<ResourceLocation> wrapped = new HashSet<>();
         List<String> failed = new ArrayList<>();
         for (BlockState state : Block.BLOCK_STATE_REGISTRY) {
             for (Map.Entry<Role<BlockState>, UnaryOperator<BlockState>> e : looks.entrySet()) {
@@ -118,7 +110,7 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
                     continue;
                 }
                 if (!changes) continue;
-                ModelResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
+                ResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
                 BakedModel model = models.get(loc);
                 if (model != null && !(model instanceof FormedModel) && wrapped.add(loc)) models.put(loc, new FormedModel(model));
                 break;

@@ -25,7 +25,7 @@ public final class StructureInfo {
     private StructureInfo() {}
 
     public static Component name(Definition<BlockState> def) {
-        ResourceLocation id = ResourceLocation.parse(def.id());
+        ResourceLocation id = new ResourceLocation(def.id());
         return Component.translatableWithFallback("multiblock." + id.getNamespace() + "." + id.getPath(), def.id());
     }
 

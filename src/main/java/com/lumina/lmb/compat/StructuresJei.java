@@ -41,7 +41,7 @@ import java.util.List;
  */
 @JeiPlugin
 public class StructuresJei implements IModPlugin {
-    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(LuminaMultiBlock.MODID, "structures");
+    private static final ResourceLocation ID = new ResourceLocation(LuminaMultiBlock.MODID, "structures");
     public static final RecipeType<Structure> TYPE = RecipeType.create(LuminaMultiBlock.MODID, "structures", Structure.class);
 
     /** One structure: its definition and name, the blocks that may be its controller, what it takes, how it is being looked at. */
@@ -144,7 +144,7 @@ public class StructuresJei implements IModPlugin {
                 }
 
                 @Override
-                public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {
+                public boolean mouseScrolled(double x, double y, double vertical) {
                     if (Screen.hasShiftDown())
                         view.layers = Math.max(1, view.layers + (vertical > 0 ? 1 : -1));
                     else

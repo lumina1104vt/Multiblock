@@ -7,8 +7,9 @@ import com.lumina.lmb.network.FormedPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.lumina.lmb.network.LmbNetwork;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 /**
  * Tells clients which structures look formed. Every player in the dimension hears every change (there are
@@ -27,7 +28,7 @@ public final class FormedSync implements StructureListener<BlockState> {
     }
 
     private void send(Instance<BlockState> s, boolean formed) {
-        PacketDistributor.sendToPlayersInDimension(level, packet(s, formed));
+        LmbNetwork.CHANNEL.send(PacketDistributor.DIMENSION.with(level::dimension), packet(s, formed));
     }
 
     @Override
@@ -51,11 +52,11 @@ public final class FormedSync implements StructureListener<BlockState> {
     }
 
     static void sendAll(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, FormedPacket.Reset.INSTANCE);
+        LmbNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), FormedPacket.Reset.INSTANCE);
         MultiblockData data = MultiblockData.get(player.serverLevel());
         if (data == null) return;
         for (Instance<BlockState> s : data.engine().all()) {
-            if (s.isFormed()) PacketDistributor.sendToPlayer(player, packet(s, true));
+            if (s.isFormed()) LmbNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet(s, true));
         }
     }
 
