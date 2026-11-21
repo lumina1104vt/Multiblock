@@ -1,8 +1,9 @@
 {
   "required": true,
+  "refmap": "lumina_multiblock.refmap.json",
   "minVersion": "0.8",
   "package": "com.lumina.lmb.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "LevelChunkMixin"
   ],
