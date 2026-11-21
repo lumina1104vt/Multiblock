@@ -167,7 +167,7 @@ public final class Projection {
             return;
         Minecraft mc = Minecraft.getInstance();
         Vec3 cam = event.getCamera().getPosition();
-        PoseStack pose = new PoseStack();     // the view's turn is in the model-view matrix already, at this stage
+        PoseStack pose = event.getPoseStack();     // 1.20.1: the view's turn is in this stack (the model-view matrix is still the identity)
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
         RenderType sheet = Sheets.translucentCullBlockSheet();
         VertexConsumer vc = buffers.getBuffer(sheet);
