@@ -37,7 +37,7 @@ public class StructuresEmi implements EmiPlugin {
         private final Definition<BlockState> def;
 
         Recipe(Definition<BlockState> def) {
-            super(CATEGORY, new ResourceLocation(def.id()).withPrefix("structure/"), COLUMNS * SLOT, GRID_Y + ROWS * SLOT);
+            super(CATEGORY, new ResourceLocation(def.id()).withPrefix("/structure/"), COLUMNS * SLOT, GRID_Y + ROWS * SLOT);
             this.def = def;
             StructureInfo.materials(def).forEach(s -> inputs.add(stack(s)));
             StructureInfo.parts(def).forEach(s -> catalysts.add(stack(s)));
