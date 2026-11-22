@@ -104,7 +104,10 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
         Set<ResourceLocation> wrapped = new HashSet<>();
         List<String> failed = new ArrayList<>();
         Map<String, int[]> stats = new LinkedHashMap<>();   // role: matched, changed, no model
-        for (BlockState state : Block.BLOCK_STATE_REGISTRY) {
+        // (Forge 1.20.1 leaves Block.BLOCK_STATE_REGISTRY empty here: the states come from each block)
+        List<BlockState> states = new ArrayList<>();
+        for (Block block : net.minecraftforge.registries.ForgeRegistries.BLOCKS) states.addAll(block.getStateDefinition().getPossibleStates());
+        for (BlockState state : states) {
             for (Map.Entry<Role<BlockState>, UnaryOperator<BlockState>> e : looks.entrySet()) {
                 boolean changes;
                 int[] stat = stats.computeIfAbsent(e.getKey().name(), k -> new int[3]);
