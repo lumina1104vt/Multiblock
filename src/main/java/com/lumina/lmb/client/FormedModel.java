@@ -96,7 +96,10 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
                 }
             }
         });
-        if (looks.isEmpty()) return;
+        if (looks.isEmpty()) {
+            LuminaMultiBlock.LOGGER.info("formed looks: none registered when the models were baked");
+            return;
+        }
         Map<ResourceLocation, BakedModel> models = event.getModels();
         Set<ResourceLocation> wrapped = new HashSet<>();
         List<String> failed = new ArrayList<>();
@@ -116,6 +119,7 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
                 break;
             }
         }
+        LuminaMultiBlock.LOGGER.info("formed looks: {} role looks, {} block models wrapped", looks.size(), wrapped.size());
         if (!failed.isEmpty()) LuminaMultiBlock.LOGGER.warn("formed looks: matchers of roles {} threw while picking models", Set.copyOf(failed));
     }
 }

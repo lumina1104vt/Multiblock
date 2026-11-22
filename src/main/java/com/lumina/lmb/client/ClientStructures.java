@@ -29,6 +29,8 @@ public final class ClientStructures {
     private ClientStructures() {}
 
     public static void apply(FormedPacket packet) {
+        com.lumina.lmb.LuminaMultiBlock.LOGGER.info("formed packet: {} at {} {} (definition {})", packet.definition(), net.minecraft.core.BlockPos.of(packet.anchor()).toShortString(),
+                packet.formed() ? "formed" : "not formed", Multiblocks.definitions().containsKey(packet.definition()) ? "known" : "UNKNOWN on this client");
         Placement<BlockState> old = BY_ANCHOR.remove(packet.anchor());
         if (old != null) redraw(old);
         if (packet.formed()) {
