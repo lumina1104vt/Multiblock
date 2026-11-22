@@ -103,23 +103,30 @@ public final class FormedModel extends BakedModelWrapper<BakedModel> {
         Map<ResourceLocation, BakedModel> models = event.getModels();
         Set<ResourceLocation> wrapped = new HashSet<>();
         List<String> failed = new ArrayList<>();
+        Map<String, int[]> stats = new LinkedHashMap<>();   // role: matched, changed, no model
         for (BlockState state : Block.BLOCK_STATE_REGISTRY) {
             for (Map.Entry<Role<BlockState>, UnaryOperator<BlockState>> e : looks.entrySet()) {
                 boolean changes;
+                int[] stat = stats.computeIfAbsent(e.getKey().name(), k -> new int[3]);
                 try {
-                    changes = e.getKey().matcher().test(state) != null && e.getValue().apply(state) != state;
+                    boolean matched = e.getKey().matcher().test(state) != null;
+                    if (matched) stat[0]++;
+                    changes = matched && e.getValue().apply(state) != state;
                 } catch (RuntimeException ex) {
                     failed.add(e.getKey().name());
                     continue;
                 }
                 if (!changes) continue;
+                stat[1]++;
                 ResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
                 BakedModel model = models.get(loc);
+                if (model == null) stat[2]++;
                 if (model != null && !(model instanceof FormedModel) && wrapped.add(loc)) models.put(loc, new FormedModel(model));
                 break;
             }
         }
         LuminaMultiBlock.LOGGER.info("formed looks: {} role looks, {} block models wrapped", looks.size(), wrapped.size());
+        stats.forEach((role, n) -> LuminaMultiBlock.LOGGER.info("formed looks: role {}: {} states match, {} change, {} of those have no model", role, n[0], n[1], n[2]));
         if (!failed.isEmpty()) LuminaMultiBlock.LOGGER.warn("formed looks: matchers of roles {} threw while picking models", Set.copyOf(failed));
     }
 }
