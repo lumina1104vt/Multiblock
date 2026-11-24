@@ -85,3 +85,11 @@ side="BOTH"
     versionRange="[0,)"
     ordering="AFTER"
     side="BOTH"
+
+# lumina_multiblock_engine: the structure engine this mod is built on; NeoForge loads it first
+[[dependencies."${mod_id}"]]
+    modId="lumina_multiblock_engine"
+    type="required"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"

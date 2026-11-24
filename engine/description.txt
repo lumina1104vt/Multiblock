@@ -1,0 +1,3 @@
+The multiblock structure engine: plain Java that matches and builds structures over a generic block-state type. No Minecraft types.
+
+多方塊結構引擎：純 Java，用泛型方塊狀態比對與建造結構，不含 Minecraft 型別。
