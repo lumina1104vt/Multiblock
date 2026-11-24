@@ -77,3 +77,11 @@ side="BOTH"
 # stop your mod loading on the server for example.
 #[features."${mod_id}"]
 #openGLVersion="[3.2,)"
+
+# lumina_corelib: a Lumina base layer this mod is built on; NeoForge loads it first
+[[dependencies."${mod_id}"]]
+    modId="lumina_corelib"
+    type="required"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
