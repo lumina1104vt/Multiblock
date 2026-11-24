@@ -28,6 +28,10 @@ repositories {
 }
 
 dependencies {
+    // the structure engine (plain Java over a generic block-state type) lives in its own lib mod
+    compileOnly project(':lumina-multiblock-engine')
+    testImplementation project(':lumina-multiblock-engine')
+
     // optional: the builder takes blocks from AE networks (com.lumina.lmb.compat, only loaded with AE2)
     modCompileOnly "maven.modrinth:ae2:${ae2_version}"
 

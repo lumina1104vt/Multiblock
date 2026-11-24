@@ -1,0 +1,38 @@
+// lumina_multiblock_engine - Lumina Multiblock Engine, a separate lib mod, bundled into ae2_gvt by jarJar. No runs of its own: the
+// root project's runs load it. Shared setup: gradle/mod-common.gradle.
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'net.neoforged.moddev.legacyforge'   // version from the root project
+}
+
+// version comes from the root gradle.properties (lumina_multiblock_engine_mod_version); must be set before mod-common reads it
+ext.mod_version = rootProject.lumina_multiblock_engine_mod_version
+
+// mod description: the text lives in description.txt (UTF-8, English then 繁體中文)
+ext.mod_description = file('description.txt').getText('UTF-8')
+
+apply from: rootProject.file('gradle/mod-common.gradle')
+
+legacyForge {
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+repositories {
+    mavenCentral()  // JUnit
+}
+
+dependencies {
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+    testImplementation platform('org.junit:junit-bom:5.10.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
