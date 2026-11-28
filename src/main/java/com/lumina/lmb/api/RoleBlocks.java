@@ -23,7 +23,17 @@ public final class RoleBlocks {
     private static final Map<Role<BlockState>, List<BlockState>> BLOCKS = new ConcurrentHashMap<>();
     private static final Map<Role<BlockState>, Supplier<? extends Block>> PREFERRED = new ConcurrentHashMap<>();
 
+    private static final Map<Role<BlockState>, Supplier<BlockState>> PLACED = new ConcurrentHashMap<>();
+
     private RoleBlocks() {}
+
+    /**
+     * For a role that wants one exact state (a top slab): what to draw and to place. Like {@link #prefer}, a
+     * supplier, so {@link Role#places} is no use for blocks that don't exist yet.
+     */
+    public static void place(Role<BlockState> role, Supplier<BlockState> state) {
+        PLACED.put(role, state);
+    }
 
     /** For a role of several blocks: this one first. A supplier, as blocks don't exist yet when structures are defined. */
     public static void prefer(Role<BlockState> role, Supplier<? extends Block> block) {
@@ -36,6 +46,8 @@ public final class RoleBlocks {
 
     private static List<BlockState> find(Role<BlockState> role) {
         if (role.matcher().test(Blocks.AIR.defaultBlockState()) != null) return List.of();
+        Supplier<BlockState> placed = PLACED.get(role);
+        if (placed != null) return List.of(placed.get());
         List<BlockState> blocks = new ArrayList<>();
         for (BlockState state : role.suggestions()) {
             if (state.getBlock().asItem() != Items.AIR) blocks.add(state);
