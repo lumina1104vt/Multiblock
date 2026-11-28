@@ -80,6 +80,11 @@ public final class StructureInfo {
                 materials.add(new ItemStack(blocks.get(0).getBlock().asItem(), count));
         });
         materials.addAll(required);
-        return materials;
+        List<ItemStack> merged = new ArrayList<>();
+        for (ItemStack stack : materials) {
+            merged.stream().filter(m -> m.is(stack.getItem())).findFirst()
+                    .ifPresentOrElse(m -> m.grow(stack.getCount()), () -> merged.add(stack));
+        }
+        return merged;
     }
 }
